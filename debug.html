@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Auth - Pimms Médiation</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container py-4">
+        <h1>Debug Authentification</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>État de l'authentification</h5>
+            </div>
+            <div class="card-body">
+                <div id="authStatus">
+                    <!-- L'état sera affiché ici -->
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Test de connexion</h5>
+            </div>
+            <div class="card-body">
+                <form id="testLoginForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="testUsername" class="form-label">Nom d'utilisateur</label>
+                            <input type="text" class="form-control" id="testUsername" value="accueil">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="testPassword" class="form-label">Mot de passe</label>
+                            <input type="password" class="form-control" id="testPassword" value="accueil">
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Se connecter</button>
+                            <button type="button" class="btn btn-secondary" onclick="logout()">Se déconnecter</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>Actions de test</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex gap-2">
+                    <button class="btn btn-info" onclick="checkAuth()">Vérifier l'auth</button>
+                    <button class="btn btn-warning" onclick="clearStorage()">Vider le stockage</button>
+                    <button class="btn btn-success" onclick="goToAccueil()">Aller à Accueil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="js/auth.js"></script>
+    
+    <script>
+        function updateAuthStatus() {
+            const statusDiv = document.getElementById('authStatus');
+            const user = authManager.getCurrentUser();
+            const isLoggedIn = authManager.isLoggedIn();
+            
+            let html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Connecté :</strong> ${isLoggedIn ? 'Oui' : 'Non'}</p>
+                        <p><strong>Utilisateur :</strong> ${user ? user.username : 'Aucun'}</p>
+                        <p><strong>Rôle :</strong> ${user ? user.role : 'Aucun'}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>localStorage currentUser :</strong></p>
+                        <pre class="bg-light p-2 small">${localStorage.getItem('currentUser') || 'Vide'}</pre>
+                        <p><strong>localStorage users :</strong></p>
+                        <pre class="bg-light p-2 small">${localStorage.getItem('users') || 'Vide'}</pre>
+                    </div>
+                </div>
+            `;
+            
+            statusDiv.innerHTML = html;
+        }
+        
+        function checkAuth() {
+            console.log('=== VÉRIFICATION AUTH ===');
+            console.log('authManager:', authManager);
+            console.log('isLoggedIn:', authManager.isLoggedIn());
+            console.log('getCurrentUser:', authManager.getCurrentUser());
+            console.log('localStorage currentUser:', localStorage.getItem('currentUser'));
+            console.log('localStorage users:', localStorage.getItem('users'));
+            updateAuthStatus();
+        }
+        
+        function clearStorage() {
+            localStorage.clear();
+            console.log('Stockage vidé');
+            updateAuthStatus();
+        }
+        
+        function goToAccueil() {
+            if (authManager.isLoggedIn()) {
+                window.location.href = 'accueil.html';
+            } else {
+                alert('Vous devez être connecté');
+            }
+        }
+        
+        function logout() {
+            authManager.logout();
+            updateAuthStatus();
+            console.log('Déconnexion effectuée');
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page de debug chargée');
+            updateAuthStatus();
+            
+            // Test de connexion
+            const testLoginForm = document.getElementById('testLoginForm');
+            testLoginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('testUsername').value;
+                const password = document.getElementById('testPassword').value;
+                
+                console.log('Tentative de connexion:', username, password);
+                
+                const user = authManager.login(username, password);
+                if (user) {
+                    console.log('Connexion réussie:', user);
+                    updateAuthStatus();
+                } else {
+                    console.log('Échec de la connexion');
+                    alert('Identifiants incorrects');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

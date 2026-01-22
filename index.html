@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil Visiteurs - Pimms Médiation</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
+        <div class="card shadow-lg" style="width: 400px;">
+            <div class="card-body p-5">
+                <!-- Logo -->
+                <div class="text-center mb-4">
+                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-people-fill text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <h2 class="card-title text-primary fw-bold">Connexion</h2>
+                    <p class="text-muted">Accueil Visiteurs - Pimms Médiation</p>
+                </div>
+
+                <!-- Formulaire de connexion -->
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Nom d'utilisateur</label>
+                        <input type="text" class="form-control" id="username" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Mot de passe</label>
+                        <input type="password" class="form-control" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+                    </button>
+                </form>
+
+                <!-- Comptes de démonstration -->
+               <!-- <div class="mt-4 p-3 bg-light rounded">
+                    <h6 class="text-muted mb-2">Comptes de démonstration :</h6>
+                    <small class="text-muted d-block">Admin: admin / admin</small>
+                    <small class="text-muted d-block">Accueil: accueil / accueil</small>
+                    <small class="text-muted d-block">Médiateur: mediateur / mediateur</small>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="js/api-client.js"></script>
+    <script>
+        // Gestion du formulaire de connexion
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                if (!username || !password) {
+                    alert('Veuillez remplir tous les champs');
+                    return;
+                }
+                
+                try {
+                    const result = await window.apiClient.login(username, password);
+                    
+                    if (result.success) {
+                        // Rediriger vers la page appropriée
+                        window.apiClient.redirectToRolePage();
+                    } else {
+                        alert(result.message || 'Erreur de connexion');
+                    }
+                } catch (error) {
+                    alert('Erreur de connexion: ' + error.message);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
